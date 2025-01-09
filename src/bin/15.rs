@@ -14,10 +14,10 @@ pub fn part_one(input: &str) -> Option<u64> {
         .clone();
 
     for d in dir {
-        println!("Fish at {} moving {}", fish_pos, d);
+        //println!("Fish at {} moving {}", fish_pos, d);
 
         if let Some(tomove) = find_all_mover(&g, d, fish_pos.clone()) {
-            println!("to_move: {:#?}", tomove);
+            //println!("to_move: {:#?}", tomove);
             let mut to_resinsert: Vec<_> = Vec::default();
             for e in tomove.iter() {
                 if let Some(present) = g.remove(e) {
@@ -26,7 +26,7 @@ pub fn part_one(input: &str) -> Option<u64> {
                     panic!("moving non-existing object")
                 }
             }
-            println!("reinserting: {:#?}", to_resinsert);
+            //println!("reinserting: {:#?}", to_resinsert);
             for (pos, o) in to_resinsert {
                 g.insert(pos, o);
             }
@@ -113,7 +113,7 @@ pub fn part_two(input: &str) -> Option<u64> {
         .clone();
 
     for d in dir {
-        println!("Fish at {} moving {}", fish_pos, d);
+        //println!("Fish at {} moving {}", fish_pos, d);
 
         if let Some(tomove) = find_all_mover(&g, d, fish_pos.clone()) {
             //println!("to_move: {:#?}", tomove);
@@ -178,7 +178,7 @@ fn parse_input(input: &str) -> (HashMap<IVec2, Object>, Vec<IVec2>) {
         .lines()
         .flat_map(|line| line.chars().into_iter().map(c_to_IVec2))
         .collect();
-    println!("movements: {:#?}", mov);
+    //println!("movements: {:#?}", mov);
     return (g, mov);
 }
 
