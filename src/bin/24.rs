@@ -3,7 +3,6 @@ use itertools::Itertools;
 use std::{
     collections::{HashMap, HashSet},
     str::FromStr,
-    u8,
 };
 
 use rand::Rng;
@@ -138,9 +137,9 @@ fn execute_gate(
     };
 
     let ret = match start.op {
-        Op::AND => a & b,
-        Op::OR => a | b,
-        Op::XOR => a ^ b,
+        Op::And => a & b,
+        Op::Or => a | b,
+        Op::Xor => a ^ b,
     };
     outputs.insert(start.out.to_string(), ret);
     (ret, visited)
@@ -148,9 +147,9 @@ fn execute_gate(
 
 #[derive(Debug, Clone)]
 enum Op {
-    AND,
-    OR,
-    XOR,
+    And,
+    Or,
+    Xor,
 }
 
 pub fn part_one(input: &str) -> Option<usize> {
@@ -415,9 +414,9 @@ fn parse_input(input: &str) -> (Inputs, HashMap<String, Gate>) {
                     b: GateInput::from_str(elems[2]).unwrap(),
                     out: elems[4].to_string(),
                     op: match elems[1] {
-                        "AND" => Op::AND,
-                        "OR" => Op::OR,
-                        "XOR" => Op::XOR,
+                        "AND" => Op::And,
+                        "OR" => Op::Or,
+                        "XOR" => Op::Xor,
                         _ => unreachable!("invalid input for OP"),
                     },
                 },

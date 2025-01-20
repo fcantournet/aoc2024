@@ -1,4 +1,7 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    cmp::Ordering,
+    collections::{HashMap, HashSet},
+};
 
 use glam::IVec2;
 use nom::{
@@ -37,19 +40,15 @@ fn part_one_with_params(input: &str, size: IVec2) -> Option<usize> {
     print_grid(&finals, size);
 
     let (mut q1, mut q2, mut q3, mut q4) = (0, 0, 0, 0);
+
     for f in finals.iter() {
-        if f.x < h.x {
-            if f.y < h.y {
-                q1 += 1;
-            } else if f.y > h.y {
-                q2 += 1;
-            }
-        } else if f.x > h.x {
-            if f.y < h.y {
-                q3 += 1;
-            } else if f.y > h.y {
-                q4 += 1;
-            }
+        match (Ord::cmp(&f.x, &h.x), Ord::cmp(&f.y, &h.y)) {
+            (Ordering::Less, Ordering::Less) => q1 += 1,
+            (Ordering::Less, Ordering::Greater) => q2 += 1,
+            (Ordering::Greater, Ordering::Less) => q3 += 1,
+            (Ordering::Greater, Ordering::Greater) => q4 += 1,
+            (Ordering::Equal, _) => (),
+            (_, Ordering::Equal) => (),
         }
     }
     Some(q1 * q2 * q3 * q4)
@@ -75,11 +74,11 @@ pub fn part_two(input: &str) -> Option<usize> {
         step += 1;
     };
     println!("Step {}", step);
-    print_grid(&unique.into_iter().collect(), size);
+    print_grid(&unique.into_iter().collect::<Vec<_>>(), size);
     Some(result as usize)
 }
 
-fn print_grid(sentinels: &Vec<IVec2>, size: IVec2) {
+fn print_grid(sentinels: &[IVec2], size: IVec2) {
     let places = sentinels.iter().fold(HashMap::new(), |mut acc, v| {
         acc.entry(v).and_modify(|x| *x += 1).or_insert(1);
         acc

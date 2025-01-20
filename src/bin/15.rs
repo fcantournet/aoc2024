@@ -59,7 +59,7 @@ fn find_all_mover(g: &HashMap<IVec2, Object>, d: IVec2, fish_pos: IVec2) -> Opti
                     _ = tomove.insert(next);
                     tocheck.push_back(next);
                 }
-                let rightbox = next + &IVec2 { x: 1, y: 0 };
+                let rightbox = next + IVec2 { x: 1, y: 0 };
                 if !tomove.contains(&rightbox) {
                     _ = tomove.insert(rightbox);
                     tocheck.push_back(rightbox);
@@ -70,7 +70,7 @@ fn find_all_mover(g: &HashMap<IVec2, Object>, d: IVec2, fish_pos: IVec2) -> Opti
                     _ = tomove.insert(next);
                     tocheck.push_back(next);
                 }
-                let leftbox = next + &IVec2 { x: -1, y: 0 };
+                let leftbox = next + IVec2 { x: -1, y: 0 };
                 if !tomove.contains(&leftbox) {
                     _ = tomove.insert(leftbox);
                     tocheck.push_back(leftbox);

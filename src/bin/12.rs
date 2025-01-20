@@ -25,7 +25,7 @@ fn find_regions(grid: &HashMap<IVec2, char>) -> HashMap<usize, Region> {
     let mut next_region_id = 0;
 
     for tile in grid.iter() {
-        if pos_to_region.get(tile.0).is_some() {
+        if pos_to_region.contains_key(tile.0) {
             continue; // We already mapped this to a region.
         }
         // New region ! Let's map it !
@@ -84,7 +84,7 @@ fn perimeter(region: &Region) -> HashSet<(IVec2, IVec2)> {
     let mut perimeter = HashSet::new();
     for tile in region.tiles.iter() {
         for dir in AROUND {
-            if region.tiles.get(&(tile + dir)).is_none() {
+            if !region.tiles.contains(&(tile + dir)) {
                 perimeter.insert((*tile, dir));
             }
         }
@@ -120,7 +120,7 @@ fn sides(region: &Region) -> usize {
     for (tile, normale) in perimeter.iter() {
         let dir = normale.perp();
         let next = tile + dir;
-        if perimeter.get(&(next, *normale)).is_none() {
+        if !perimeter.contains(&(next, *normale)) {
             sides += 1;
         }
     }
