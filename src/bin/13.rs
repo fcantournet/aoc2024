@@ -15,7 +15,7 @@ pub fn part_one(input: &str) -> Option<usize> {
     //         println!("machine {:#?} has cost: {}", machine, cost);
     //     }
     // }
-    return Some(machines.iter().filter_map(cost).sum());
+    Some(machines.iter().filter_map(cost).sum())
 }
 
 // This is a coordinate transform, to a non-orthogonal grid,
@@ -51,16 +51,16 @@ fn cost(m: &Machine) -> Option<usize> {
 const BUMP: usize = 10_000_000_000_000;
 pub fn part_two(input: &str) -> Option<usize> {
     let mut machines = parse_input(input).unwrap().1;
-    return Some(
+    Some(
         machines
             .iter_mut()
             .filter_map(|machine| {
                 machine.prize.0 += BUMP;
                 machine.prize.1 += BUMP;
-                cost(&machine)
+                cost(machine)
             })
             .sum(),
-    );
+    )
 }
 
 #[derive(Debug, Clone)]
