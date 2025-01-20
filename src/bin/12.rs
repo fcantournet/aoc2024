@@ -25,7 +25,7 @@ fn find_regions(grid: &HashMap<IVec2, char>) -> HashMap<usize, Region> {
     let mut next_region_id = 0;
 
     for tile in grid.iter() {
-        if let Some(_) = pos_to_region.get(tile.0) {
+        if pos_to_region.get(tile.0).is_some() {
             continue; // We already mapped this to a region.
         }
         // New region ! Let's map it !
@@ -33,12 +33,12 @@ fn find_regions(grid: &HashMap<IVec2, char>) -> HashMap<usize, Region> {
         let mut region = Region {
             name: *tile.1,
             id: next_region_id,
-            tiles: [tile.0.clone()].into(),
+            tiles: [*tile.0].into(),
         };
-        pos_to_region.insert(tile.0.clone(), region.id);
+        pos_to_region.insert(*tile.0, region.id);
 
         let mut to_visit = VecDeque::new();
-        to_visit.push_back(tile.0.clone());
+        to_visit.push_back(*tile.0);
         while let Some(visiting) = to_visit.pop_front() {
             for dir in AROUND {
                 let next = visiting + dir;
@@ -49,14 +49,14 @@ fn find_regions(grid: &HashMap<IVec2, char>) -> HashMap<usize, Region> {
                             assert!(*id == region.id);
                             continue;
                         }
-                        to_visit.push_back(next.clone()); // add it to the stuff to check for further neighbourgs is region
+                        to_visit.push_back(next); // add it to the stuff to check for further neighbourgs is region
                         region.tiles.insert(next);
                         pos_to_region.insert(next, region.id);
                     }
                 }
             }
         }
-        regions.insert(region.id.clone(), region);
+        regions.insert(region.id, region);
     }
     regions
 }
@@ -84,12 +84,12 @@ fn perimeter(region: &Region) -> HashSet<(IVec2, IVec2)> {
     let mut perimeter = HashSet::new();
     for tile in region.tiles.iter() {
         for dir in AROUND {
-            if region.tiles.get(&(tile + dir)) == None {
-                perimeter.insert((tile.clone(), dir));
+            if region.tiles.get(&(tile + dir)).is_none() {
+                perimeter.insert((*tile, dir));
             }
         }
     }
-    return perimeter;
+    perimeter
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
@@ -120,7 +120,7 @@ fn sides(region: &Region) -> usize {
     for (tile, normale) in perimeter.iter() {
         let dir = normale.perp();
         let next = tile + dir;
-        if perimeter.get(&(next, normale.clone())).is_none() {
+        if perimeter.get(&(next, *normale)).is_none() {
             sides += 1;
         }
     }

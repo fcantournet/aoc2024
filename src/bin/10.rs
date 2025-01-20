@@ -45,7 +45,7 @@ fn walk_and_shit(input: &str) -> (Option<usize>, Option<usize>) {
         part2 += found_paths;
     }
 
-    return (Some(part1), Some(part2));
+    (Some(part1), Some(part2))
 }
 
 pub fn part_two(input: &str) -> Option<usize> {

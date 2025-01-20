@@ -72,7 +72,7 @@ fn match_up_until_know(output: &[usize], instructions: &[usize]) -> bool {
             return false;
         }
     }
-    return true;
+    true
 }
 
 fn try_a(mut m: Machine, a: usize, instructions: &[usize]) -> Vec<usize> {
@@ -83,7 +83,7 @@ fn try_a(mut m: Machine, a: usize, instructions: &[usize]) -> Vec<usize> {
             output.push(out);
         }
     }
-    return output;
+    output
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -102,12 +102,12 @@ impl Machine {
         match code {
             0 => {
                 //adv
-                self.a = self.a / (1 << self.combo(operand));
+                self.a /= (1 << self.combo(operand));
                 None
             }
             1 => {
                 //bxl
-                self.b = self.b ^ operand;
+                self.b ^= operand;
                 None
             }
             2 => {
@@ -124,7 +124,7 @@ impl Machine {
             }
             4 => {
                 // bxc
-                self.b = self.b ^ self.c;
+                self.b ^= self.c;
                 None
             }
             5 => {
@@ -176,7 +176,7 @@ fn parse_input(input: &str) -> (Machine, Vec<usize>) {
         .map(|s| s.parse().unwrap())
         .collect();
 
-    return (
+    (
         Machine {
             a: regs[0],
             b: regs[1],
@@ -184,7 +184,7 @@ fn parse_input(input: &str) -> (Machine, Vec<usize>) {
             pc: 0,
         },
         instructions,
-    );
+    )
 }
 
 #[cfg(test)]

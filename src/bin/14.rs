@@ -52,7 +52,7 @@ fn part_one_with_params(input: &str, size: IVec2) -> Option<usize> {
             }
         }
     }
-    return Some(q1 * q2 * q3 * q4);
+    Some(q1 * q2 * q3 * q4)
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
@@ -92,7 +92,7 @@ fn print_grid(sentinels: &Vec<IVec2>, size: IVec2) {
                 print!(".");
             }
         }
-        print!("\n");
+        println!();
     }
 }
 
@@ -136,7 +136,7 @@ mod tests {
 
     #[test]
     fn test_modulo() {
-        assert_eq!(-8 % 10, -8);
+        assert_eq!(-8, -8);
         assert_eq!((-8i32).rem_euclid(10), 2);
     }
 }

@@ -5,18 +5,12 @@ advent_of_code::solution!(15);
 
 pub fn part_one(input: &str) -> Option<u64> {
     let (mut g, dir) = parse_input(input);
-    let mut fish_pos = g
-        .iter()
-        .filter(|(_, val)| **val == Object::Fish)
-        .next()
-        .unwrap()
-        .0
-        .clone();
+    let mut fish_pos = *g.iter().find(|(_, val)| **val == Object::Fish).unwrap().0;
 
     for d in dir {
         //println!("Fish at {} moving {}", fish_pos, d);
 
-        if let Some(tomove) = find_all_mover(&g, d, fish_pos.clone()) {
+        if let Some(tomove) = find_all_mover(&g, d, fish_pos) {
             //println!("to_move: {:#?}", tomove);
             let mut to_resinsert: Vec<_> = Vec::default();
             for e in tomove.iter() {
@@ -30,7 +24,7 @@ pub fn part_one(input: &str) -> Option<u64> {
             for (pos, o) in to_resinsert {
                 g.insert(pos, o);
             }
-            fish_pos = fish_pos + d;
+            fish_pos += d;
         }
     }
 
@@ -44,7 +38,7 @@ pub fn part_one(input: &str) -> Option<u64> {
 
 fn find_all_mover(g: &HashMap<IVec2, Object>, d: IVec2, fish_pos: IVec2) -> Option<Vec<IVec2>> {
     let mut tomove = HashSet::new();
-    tomove.insert(fish_pos.clone());
+    tomove.insert(fish_pos);
 
     let mut tocheck = VecDeque::new();
     tocheck.push_back(fish_pos);
@@ -56,30 +50,30 @@ fn find_all_mover(g: &HashMap<IVec2, Object>, d: IVec2, fish_pos: IVec2) -> Opti
             Some(Object::Fish) => panic!("There is only 1 fish"),
             Some(Object::Box) => {
                 if !tomove.contains(&next) {
-                    _ = tomove.insert(next.clone());
-                    tocheck.push_back(next.clone());
+                    _ = tomove.insert(next);
+                    tocheck.push_back(next);
                 }
             }
             Some(Object::BoxLeft) => {
                 if !tomove.contains(&next) {
-                    _ = tomove.insert(next.clone());
-                    tocheck.push_back(next.clone());
+                    _ = tomove.insert(next);
+                    tocheck.push_back(next);
                 }
                 let rightbox = next + &IVec2 { x: 1, y: 0 };
                 if !tomove.contains(&rightbox) {
-                    _ = tomove.insert(rightbox.clone());
-                    tocheck.push_back(rightbox.clone());
+                    _ = tomove.insert(rightbox);
+                    tocheck.push_back(rightbox);
                 }
             }
             Some(Object::BoxRight) => {
                 if !tomove.contains(&next) {
-                    _ = tomove.insert(next.clone());
-                    tocheck.push_back(next.clone());
+                    _ = tomove.insert(next);
+                    tocheck.push_back(next);
                 }
                 let leftbox = next + &IVec2 { x: -1, y: 0 };
                 if !tomove.contains(&leftbox) {
-                    _ = tomove.insert(leftbox.clone());
-                    tocheck.push_back(leftbox.clone());
+                    _ = tomove.insert(leftbox);
+                    tocheck.push_back(leftbox);
                 }
             }
             None => continue,
@@ -104,18 +98,12 @@ fn find_all_mover(g: &HashMap<IVec2, Object>, d: IVec2, fish_pos: IVec2) -> Opti
 
 pub fn part_two(input: &str) -> Option<u64> {
     let (mut g, dir) = parse_input2(input);
-    let mut fish_pos = g
-        .iter()
-        .filter(|(_, val)| **val == Object::Fish)
-        .next()
-        .unwrap()
-        .0
-        .clone();
+    let mut fish_pos = *g.iter().find(|(_, val)| **val == Object::Fish).unwrap().0;
 
     for d in dir {
         //println!("Fish at {} moving {}", fish_pos, d);
 
-        if let Some(tomove) = find_all_mover(&g, d, fish_pos.clone()) {
+        if let Some(tomove) = find_all_mover(&g, d, fish_pos) {
             //println!("to_move: {:#?}", tomove);
             let mut to_resinsert: Vec<_> = Vec::default();
             for e in tomove.iter() {
@@ -129,7 +117,7 @@ pub fn part_two(input: &str) -> Option<u64> {
             for (pos, o) in to_resinsert {
                 g.insert(pos, o);
             }
-            fish_pos = fish_pos + d;
+            fish_pos += d;
         }
     }
 
@@ -176,10 +164,10 @@ fn parse_input(input: &str) -> (HashMap<IVec2, Object>, Vec<IVec2>) {
     }
     let mov: Vec<_> = movements
         .lines()
-        .flat_map(|line| line.chars().into_iter().map(c_to_ivec2))
+        .flat_map(|line| line.chars().map(c_to_ivec2))
         .collect();
     //println!("movements: {:#?}", mov);
-    return (g, mov);
+    (g, mov)
 }
 
 fn parse_input2(input: &str) -> (HashMap<IVec2, Object>, Vec<IVec2>) {
@@ -191,7 +179,6 @@ fn parse_input2(input: &str) -> (HashMap<IVec2, Object>, Vec<IVec2>) {
     for (y, line) in grid.lines().enumerate() {
         let line2: Vec<char> = line
             .chars()
-            .into_iter()
             .flat_map(|c| match c {
                 '#' => ['#', '#'],
                 '@' => ['@', '.'],
@@ -220,10 +207,10 @@ fn parse_input2(input: &str) -> (HashMap<IVec2, Object>, Vec<IVec2>) {
     }
     let mov: Vec<_> = movements
         .lines()
-        .flat_map(|line| line.chars().into_iter().map(c_to_ivec2))
+        .flat_map(|line| line.chars().map(c_to_ivec2))
         .collect();
     //println!("movements: {:#?}", mov);
-    return (g, mov);
+    (g, mov)
 }
 
 fn c_to_ivec2(c: char) -> IVec2 {

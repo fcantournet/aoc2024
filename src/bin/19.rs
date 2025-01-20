@@ -32,7 +32,7 @@ fn part_one_factored(input: &str) -> Option<usize> {
 }
 
 fn solves(pattern: &str, towels: &Vec<&str>, memoneg: &mut HashSet<String>) -> bool {
-    if pattern.len() == 0 {
+    if pattern.is_empty() {
         return true;
     }
 
@@ -40,7 +40,7 @@ fn solves(pattern: &str, towels: &Vec<&str>, memoneg: &mut HashSet<String>) -> b
         return false;
     }
 
-    for t in towels.into_iter() {
+    for t in towels.iter() {
         if let Some(remaining) = pattern.strip_suffix(t) {
             // println!("{} matched {}: remaing {}", pattern, t, remaining);
             let solves = solves(remaining, towels, memoneg);
@@ -60,7 +60,7 @@ fn counts(
     memo: &mut HashMap<String, usize>,
     short_circuit: bool,
 ) -> usize {
-    if pattern.len() == 0 {
+    if pattern.is_empty() {
         return 1;
     }
     if let Some(count) = memo.get(pattern) {
@@ -68,7 +68,7 @@ fn counts(
     }
 
     let mut count = 0;
-    for t in towels.into_iter() {
+    for t in towels.iter() {
         if let Some(remaining) = pattern.strip_suffix(t) {
             count += counts(remaining, towels, memo, short_circuit);
             if short_circuit && count > 0 {

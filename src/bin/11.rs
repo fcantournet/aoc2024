@@ -5,7 +5,7 @@ advent_of_code::solution!(11);
 pub fn part_one(input: &str) -> Option<usize> {
     let mut start = parse_input(input);
     start = naive(start, 25);
-    return Some(start.len());
+    Some(start.len())
 }
 
 fn recursive(n: usize, remaining_iters: usize, memo: &mut HashMap<(usize, usize), usize>) -> usize {
@@ -25,7 +25,7 @@ fn recursive(n: usize, remaining_iters: usize, memo: &mut HashMap<(usize, usize)
     };
 
     memo.insert((n, remaining_iters), res);
-    return res;
+    res
 }
 
 fn naive(mut start: Vec<usize>, iters: usize) -> Vec<usize> {
@@ -64,7 +64,7 @@ pub fn part_two(input: &str) -> Option<usize> {
     for n in start {
         res += recursive(n, 75, &mut memo);
     }
-    return Some(res);
+    Some(res)
 }
 
 fn parse_input(input: &str) -> Vec<usize> {

@@ -58,7 +58,7 @@ fn parse_input_ref(s: &str) -> Option<InputRef> {
             return Some(InputRef { c, nbits });
         }
     }
-    return None;
+    None
 }
 
 struct Inputs {
@@ -104,11 +104,11 @@ fn execute_gate(
     }
     visited.insert((start.out.to_owned(), depth));
     if let Some(val) = outputs.get(&start.out) {
-        return (val.clone(), visited);
+        return (*val, visited);
     }
 
     let a = match &start.a {
-        GateInput::InputRef(ir) => inputs.read(&ir),
+        GateInput::InputRef(ir) => inputs.read(ir),
         GateInput::GateName(name) => {
             let (val, sub_graph) = execute_gate(
                 &connectivity[name],
@@ -123,7 +123,7 @@ fn execute_gate(
     };
 
     let b = match &start.b {
-        GateInput::InputRef(ir) => inputs.read(&ir),
+        GateInput::InputRef(ir) => inputs.read(ir),
         GateInput::GateName(name) => {
             let (val, sub_graph) = execute_gate(
                 &connectivity[name],
@@ -207,7 +207,7 @@ fn test_many_ints(input: &str) -> Option<Vec<String>> {
     let mut it = freq_bad_gate.iter().sorted_by(|a, b| a.1.cmp(b.1));
     let worst = it.next().unwrap();
 
-    return None;
+    None
 }
 
 pub fn part_two(input: &str) -> Option<String> {
@@ -263,7 +263,7 @@ fn part_two_real(input: &str) -> Option<String> {
                 fixer.push(vec![a.to_string(), b.to_string()])
             }
         }
-        if fixer.len() == 0 {
+        if fixer.is_empty() {
             remaining_candidates.extend(candidates)
         } else {
             all_fixer.extend(fixer);
@@ -306,7 +306,7 @@ fn part_two_real(input: &str) -> Option<String> {
             return Some(c.iter().flatten().sorted().join(","));
         }
     }
-    return None;
+    None
 }
 
 // We know we never call this with sets of swaps that touch the same gate twice.
@@ -363,7 +363,7 @@ fn check_add(
     let mut outputs = HashMap::new();
 
     for gate in gates.iter() {
-        execute_gate(gate, &connectivity, &inputs, &mut outputs, 0);
+        execute_gate(gate, connectivity, inputs, &mut outputs, 0);
     }
 
     let mut result = 0;
@@ -377,7 +377,7 @@ fn check_add(
         result += (outputs[b] as usize) << i;
     }
 
-    return (result, outputs);
+    (result, outputs)
 }
 
 fn parse_input(input: &str) -> (Inputs, HashMap<String, Gate>) {
@@ -406,7 +406,7 @@ fn parse_input(input: &str) -> (Inputs, HashMap<String, Gate>) {
         .unwrap()
         .lines()
         .map(|line| {
-            let elems: Vec<_> = line.trim().split_whitespace().collect();
+            let elems: Vec<_> = line.split_whitespace().collect();
             // x04 AND y04 -> ppw
             (
                 elems[4].to_string(),
@@ -424,7 +424,7 @@ fn parse_input(input: &str) -> (Inputs, HashMap<String, Gate>) {
             )
         })
         .collect();
-    return (inputs, connectivity);
+    (inputs, connectivity)
 }
 
 #[cfg(test)]

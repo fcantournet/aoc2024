@@ -19,7 +19,7 @@ fn basic_path(
         visited.insert(position.clone());
         (position, orientation) = grid.step(&position, &orientation);
     }
-    return visited;
+    visited
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
@@ -74,7 +74,7 @@ fn loops_if_we_add_a_box(
             panic!("megaloop1");
         }
     }
-    return false;
+    false
 }
 
 fn parse(input: &str) -> (Grid, Position, Orientation) {
@@ -100,7 +100,7 @@ fn parse(input: &str) -> (Grid, Position, Orientation) {
     }
 
     //println!("grid: {:#?} start: {:#?}", grid, start);
-    return (grid, start, Orientation::Up);
+    (grid, start, Orientation::Up)
 }
 
 #[derive(Debug, Clone)]
@@ -132,7 +132,7 @@ impl Grid {
         if self.obstacles.contains(&next_position) {
             return (position.clone(), orientation.rotate90());
         }
-        return (next_position, orientation.clone());
+        (next_position, orientation.clone())
     }
 
     fn is_not_out(&self, position: &Position) -> bool {

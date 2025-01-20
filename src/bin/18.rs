@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashMap, VecDeque},
-    i32,
-};
+use std::collections::{HashMap, VecDeque};
 
 use pathfinding::prelude::bfs;
 
@@ -23,7 +20,7 @@ fn part_one_with_size(input: &str, size: (usize, usize), fallen: usize) -> Optio
         }
     }
     for f in falling.iter().take(fallen) {
-        grid.insert(f.clone(), true);
+        grid.insert(*f, true);
     }
 
     let start = IVec2::new(0, 0);
@@ -91,7 +88,7 @@ fn mydfs(grid: &HashMap<IVec2, bool>, start: IVec2, end: IVec2) -> Option<usize>
             }
         }
     }
-    return Some(shortest);
+    Some(shortest)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
