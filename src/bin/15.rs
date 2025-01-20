@@ -176,7 +176,7 @@ fn parse_input(input: &str) -> (HashMap<IVec2, Object>, Vec<IVec2>) {
     }
     let mov: Vec<_> = movements
         .lines()
-        .flat_map(|line| line.chars().into_iter().map(c_to_IVec2))
+        .flat_map(|line| line.chars().into_iter().map(c_to_ivec2))
         .collect();
     //println!("movements: {:#?}", mov);
     return (g, mov);
@@ -220,13 +220,13 @@ fn parse_input2(input: &str) -> (HashMap<IVec2, Object>, Vec<IVec2>) {
     }
     let mov: Vec<_> = movements
         .lines()
-        .flat_map(|line| line.chars().into_iter().map(c_to_IVec2))
+        .flat_map(|line| line.chars().into_iter().map(c_to_ivec2))
         .collect();
     //println!("movements: {:#?}", mov);
     return (g, mov);
 }
 
-fn c_to_IVec2(c: char) -> IVec2 {
+fn c_to_ivec2(c: char) -> IVec2 {
     match c {
         '^' => IVec2 { x: 0, y: -1 },
         '>' => IVec2 { x: 1, y: 0 },

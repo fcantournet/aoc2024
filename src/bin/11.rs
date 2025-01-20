@@ -16,14 +16,13 @@ fn recursive(n: usize, remaining_iters: usize, memo: &mut HashMap<(usize, usize)
         return *res;
     }
 
-    let mut res = 0;
-    if n == 0 {
-        res = recursive(1, remaining_iters - 1, memo);
+    let res = if n == 0 {
+        recursive(1, remaining_iters - 1, memo)
     } else if let Some((a, b)) = split_if_even_digits(&n) {
-        res = recursive(a, remaining_iters - 1, memo) + recursive(b, remaining_iters - 1, memo);
+        recursive(a, remaining_iters - 1, memo) + recursive(b, remaining_iters - 1, memo)
     } else {
-        res = recursive(n * 2024, remaining_iters - 1, memo);
-    }
+        recursive(n * 2024, remaining_iters - 1, memo)
+    };
 
     memo.insert((n, remaining_iters), res);
     return res;
@@ -58,7 +57,7 @@ fn split_if_even_digits(n: &usize) -> Option<(usize, usize)> {
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
-    let mut start = parse_input(input);
+    let start = parse_input(input);
 
     let mut memo = HashMap::new();
     let mut res = 0;

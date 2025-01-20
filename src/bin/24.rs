@@ -183,7 +183,7 @@ pub fn part_one_from_gate(input: &str, gates: &[String]) -> Option<usize> {
 fn test_many_ints(input: &str) -> Option<Vec<String>> {
     let (_, connectivity) = parse_input(input);
     let mut freq_bad_gate = HashMap::new();
-    for i in 0..1000 {
+    for _ in 0..1000 {
         let inputs = Inputs {
             x: rand::thread_rng().gen_range(1000000000000..6000000000000),
             y: rand::thread_rng().gen_range(1000000000000..6000000000000),
@@ -270,7 +270,7 @@ fn part_two_real(input: &str) -> Option<String> {
         }
     }
 
-    let mut swaps: Vec<_> = remaining_candidates
+    let swaps: Vec<_> = remaining_candidates
         .iter()
         .map(|(g, _)| g.clone())
         .combinations(2)
@@ -280,7 +280,7 @@ fn part_two_real(input: &str) -> Option<String> {
 
     dbg!(&all_fixer);
 
-    let mut to_check = &all_fixer
+    let to_check = &all_fixer
         .into_iter()
         .combinations(4)
         .filter(|swaps| {

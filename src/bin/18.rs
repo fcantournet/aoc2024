@@ -1,10 +1,9 @@
 use std::{
     collections::{HashMap, VecDeque},
-    hash::DefaultHasher,
     i32,
 };
 
-use pathfinding::prelude::{bfs, dfs};
+use pathfinding::prelude::bfs;
 
 use glam::IVec2;
 

@@ -42,7 +42,7 @@ pub fn part_two(input: &str) -> Option<usize> {
 
     let mut a_known_bits = vec![0usize];
 
-    for i in 0..instructions.len() {
+    for _ in 0..instructions.len() {
         // println!("{:#?}", a_known_bits);
         let mut next_possibles: Vec<usize> = Vec::new();
         for possible in a_known_bits {
