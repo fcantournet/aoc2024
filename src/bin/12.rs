@@ -69,12 +69,12 @@ pub fn part_one(input: &str) -> Option<usize> {
     for region in regions.values() {
         let area = region.tiles.len();
         let peri = perimeter(region);
-        println!(
-            "region {} has area {} and perimeter {}",
-            region.name,
-            &area,
-            &peri.len()
-        );
+        // println!(
+        //     "region {} has area {} and perimeter {}",
+        //     region.name,
+        //     &area,
+        //     &peri.len()
+        // );
         result += area * peri.len();
     }
     Some(result)
@@ -100,10 +100,12 @@ pub fn part_two(input: &str) -> Option<usize> {
     for region in regions.values() {
         let area = region.tiles.len();
         let sides = sides(region);
-        println!(
-            "region {} has area {} and # of sides {}",
-            region.name, &area, &sides
-        );
+        // println!(
+        //     "region {} has area {} and # of sides {}",
+        //     region.name,
+        //     &area,
+        //     &sides
+        // );
         result += area * sides;
     }
     Some(result)

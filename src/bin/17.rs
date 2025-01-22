@@ -3,7 +3,7 @@ advent_of_code::solution!(17);
 
 pub fn part_one(input: &str) -> Option<String> {
     let (m, instructions) = parse_input(input);
-    println!("State: {:#?}, instructions: {:#?}", m, instructions);
+    // println!("State: {:#?}, instructions: {:#?}", m, instructions);
 
     let mut machine = m.clone();
     let mut output = Vec::new();

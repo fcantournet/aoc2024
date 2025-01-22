@@ -30,7 +30,7 @@ fn recursive(n: usize, remaining_iters: usize, memo: &mut HashMap<(usize, usize)
 
 fn naive(mut start: Vec<usize>, iters: usize) -> Vec<usize> {
     for i in 0..iters {
-        println!("iter {}: len(start): {}", i, start.len());
+        // println!("iter {}: len(start): {}", i, start.len());
         let mut next: Vec<usize> = Vec::with_capacity(start.capacity());
         for elem in start.iter() {
             if *elem == 0 {

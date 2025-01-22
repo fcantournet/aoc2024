@@ -35,9 +35,9 @@ fn part_one_with_params(input: &str, size: IVec2) -> Option<usize> {
         .collect();
 
     let h = size / 2;
-    println!("h: {:#?}", h);
-    println!("finals: {:#?}", finals);
-    print_grid(&finals, size);
+    //println!("h: {:#?}", h);
+    //println!("finals: {:#?}", finals);
+    //print_grid(&finals, size);
 
     let (mut q1, mut q2, mut q3, mut q4) = (0, 0, 0, 0);
 
@@ -73,7 +73,7 @@ pub fn part_two(input: &str) -> Option<usize> {
         }
         step += 1;
     };
-    println!("Step {}", step);
+    // println!("Step {}", step);
     print_grid(&unique.into_iter().collect::<Vec<_>>(), size);
     Some(result as usize)
 }
