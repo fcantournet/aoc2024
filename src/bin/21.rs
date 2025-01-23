@@ -1,44 +1,89 @@
+use cached::proc_macro::cached;
 use std::collections::HashMap;
 
 use glam::IVec2;
 use itertools::Itertools;
+use num::abs;
 
 advent_of_code::solution!(21);
 
-// let NumPad: HashMap<char, IVec2> = HashMap::from([('A', IVec2::new(0, 0))]);
-
 pub fn part_one(input: &str) -> Option<usize> {
+    solve(input, 2)
+}
+pub fn part_two(input: &str) -> Option<usize> {
+    solve(input, 25)
+}
+
+fn parse_input(input: &str) -> Vec<&str> {
+    input.lines().collect()
+}
+
+fn solve(input: &str, robot_count: usize) -> Option<usize> {
     let codes = parse_input(input);
-    // let NumPad: HashMap<char, IVec2> = HashMap::from([('A', IVec2::new(0, 0))]);
 
-    let mut position = IVec2::new(0, 0);
-
-    let layers = 3;
-    let pad = NumpPad { layers: 3 };
+    let pad = NumPad {
+        possible_path: all_possible_paths(),
+    };
     let mut total = 0;
-    for code in codes.iter() {
-        let mut travel = "A".to_string();
-        travel.extend(code);
-        let mut res = 0;
+
+    // println!("{:#?}", pad.possible_path);
+
+    for code in codes.into_iter() {
+        let mut travel = format!("A{}", code);
         let mut input_lenght = 0;
         for (from, to) in travel.chars().tuple_windows() {
-            let input = pad.solve(from, to, 0);
-            println!("to go {} -> {} input: {}", from, to, input);
-            input_lenght += input.len()
+            let short_test = complexity(from, to, robot_count, &pad);
+            input_lenght += short_test;
         }
-        // Empty block to fix syntax error
         let value = code
-            .iter()
+            .chars()
             .filter(|c| c.is_digit(10))
             .join("")
             .parse::<usize>()
             .unwrap();
-        res = input_lenght * value;
+        let res = input_lenght * value;
         println!("{} * {} = {}", input_lenght, value, res);
         total += res;
     }
     Some(total)
 }
+
+#[cached(
+    key = "String",
+    convert = r#"{ format!("{}-{}-{}", from, to, robot_count) }"#
+)]
+fn complexity(from: char, to: char, robot_count: usize, pad: &NumPad) -> usize {
+    let paths = pad.paths(from, to);
+    // we recurse until out of robots in the chain.
+    let min_inputs = if robot_count > 0 {
+        paths
+            .iter()
+            .map(|path| {
+                let path = format!("A{}", path); // All moves start with the robot on 'A'
+                path.chars()
+                    .tuple_windows()
+                    .map(|(a, b)| complexity(a, b, robot_count - 1, pad))
+                    .sum::<usize>()
+            })
+            .min()
+            .expect("couldn't get min ??")
+    } else {
+        paths
+            .iter()
+            .map(|path| path.len())
+            .min()
+            .expect("couldn't calculate min")
+    };
+    println!("{} -> {} @{}: {}", from, to, robot_count, min_inputs);
+    min_inputs
+}
+
+//     +---+---+
+//     | ^ | A |
+// +---+---+---+
+// | < | v | > |
+// +---+---+---+
+struct ArrowPad {}
 
 // +---+---+---+
 // | 7 | 8 | 9 |
@@ -49,26 +94,18 @@ pub fn part_one(input: &str) -> Option<usize> {
 // +---+---+---+
 //     | 0 | A |
 //     +---+---+
-struct NumpPad {
-    layers: usize,
+struct NumPad {
+    possible_path: HashMap<IVec2, Vec<String>>,
 }
 
-impl NumpPad {
-    fn solve(&self, from: char, to: char, level: usize) -> String {
-        let mid = self.shortest_arrow_pad_for_key_from_pos(from, to);
-        // println!("      {} -> {} ({}) : {}", from, to, level, mid);
-        if level == self.layers - 1 {
-            return mid.to_string();
-        }
-        let mut res = String::with_capacity(mid.len() * 4);
-        let travel = "A".to_string() + mid;
-        for (a, b) in travel.chars().tuple_windows() {
-            res.extend(self.solve(a, b, level + 1).chars());
-        }
-        // println!("  {} -> {} at layer {}: {}", from, to, level, res);
-        res
-    }
+// This is the dead zone coordinate in both pads.
+const VERBOTTEN: IVec2 = IVec2 { x: 2, y: 0 };
 
+// We can a a single implementation for both types of pads.
+// 'A' has the same coordinate on both pads: we choose (0,0).
+// The forbidden key has the same coordinate on both pads too (2,0).
+// All other keys are unique to each pad type.
+impl NumPad {
     fn char_to_pos(&self, c: char) -> IVec2 {
         match c {
             'A' => IVec2::new(0, 0),
@@ -90,109 +127,77 @@ impl NumpPad {
             _ => unreachable!(),
         }
     }
-    fn shortest_arrow_pad_for_key_from_pos(&self, from: char, to: char) -> &str {
-        let dir = self.char_to_pos(to) - self.char_to_pos(from);
-        match dir {
-            // IVec2{x: 0, y} if y > 0 => "^".repeat(y as usize),
-            // IVec2{x: 0, y} if y < 0 => "v".repeat(y as usize),
-            // IVec2{x, y: 0} => "<".repeat(y as usize),
-            // IVec2{x, y: 0} => "<".repeat(y as usize),
-            IVec2 { x: 0, y: 0 } => JUSTA,
-            IVec2 { x: 0, y: 1 } => UP,
-            IVec2 { x: 0, y: 2 } => UPUP,
-            IVec2 { x: 0, y: 3 } => UPUPUP,
-            IVec2 { x: 0, y: -1 } => DOWN,
-            IVec2 { x: 0, y: -2 } => DOWNDOWN,
-            IVec2 { x: 0, y: -3 } => DOWNDOWNDOWN,
-            IVec2 { x: 1, y: 0 } => LEFT,
-            IVec2 { x: 2, y: 0 } => LEFTLEFT,
-            IVec2 { x: -1, y: 0 } => RIGHT,
-            IVec2 { x: -2, y: 0 } => RIGHTRIGHT,
-            IVec2 { x: 1, y: 1 } => UPLEFT,
-            IVec2 { x: 2, y: 1 } => UPLEFTLEFT,
-            IVec2 { x: 1, y: 2 } => UPUPLEFT,
-            IVec2 { x: 2, y: 2 } => UPUPLEFTLEFT,
-            IVec2 { x: 1, y: 3 } => UPUPUPLEFT,
-            IVec2 { x: 2, y: 3 } => UPUPUPLEFTLEFT,
-            IVec2 { x: -1, y: 1 } => RIGHTUP,
-            IVec2 { x: -1, y: 2 } => RIGHTUPUP,
-            IVec2 { x: -1, y: 3 } => RIGHTUPUPUP,
-            IVec2 { x: -2, y: 1 } => RIGHTRIGHTUP,
-            IVec2 { x: -2, y: 2 } => RIGHTRIGHTUPUP,
-            IVec2 { x: -1, y: -1 } => RIGHTDOWN,
-            IVec2 { x: -1, y: -2 } => RIGHTDOWNDOWN,
-            IVec2 { x: -1, y: -3 } => RIGHTDOWNDOWNDOWN,
-            IVec2 { x: -2, y: -1 } => RIGHTRIGHTDOWN,
-            IVec2 { x: -2, y: -2 } => RIGHTRIGHTDOWNDOWN,
-            IVec2 { x: -2, y: -3 } => RIGHTRIGHTDOWNDOWNDOWN,
-            IVec2 { x: 1, y: -1 } => LEFTDOWN,
-            IVec2 { x: 1, y: -2 } => LEFTDOWNDOWN,
-            IVec2 { x: 1, y: -3 } => LEFTDOWNDOWNDOWN,
-            IVec2 { x: 2, y: -1 } => LEFTLEFTDOWN,
-            IVec2 { x: 2, y: -2 } => LEFTLEFTDOWNDOWN,
-            _ => unreachable!("invalid movement vector {:#?}", dir),
+    fn paths(&self, from: char, to: char) -> Vec<String> {
+        let from_vec = self.char_to_pos(from);
+        let to_vec = self.char_to_pos(to);
+        let dir = to_vec - from_vec;
+        let mut paths = self.possible_path[&dir].clone();
+        if paths.len() == 1 {
+            return paths;
         }
+        if (to_vec.x == VERBOTTEN.x && from_vec.y == VERBOTTEN.y)
+            || (to_vec.y == VERBOTTEN.y && from_vec.x == VERBOTTEN.x)
+        {
+            // We risk going through verbotten case
+            paths = paths
+                .into_iter()
+                .filter(|p| NumPad::valid_path(&from_vec, &p))
+                .collect();
+        }
+
+        return paths;
+    }
+
+    fn valid_path(start: &IVec2, path: &str) -> bool {
+        let mut pos = start.clone();
+        for c in path.chars() {
+            match c {
+                '>' => pos.x -= 1,
+                '<' => pos.x += 1,
+                '^' => pos.y += 1,
+                'v' => pos.y -= 1,
+                'A' => (),
+                _ => unreachable!("bad direction"),
+            };
+            if pos == VERBOTTEN {
+                return false;
+            }
+        }
+        true
     }
 }
 
-//     +---+---+
-//     | ^ | A |
-// +---+---+---+
-// | < | v | > |
-// +---+---+---+
-struct ArrowPad {}
+// We can pre-compute all possible input sequences for a given move (as an IVec2).
+// From char X to Y, we can compute a IVec2 representing the movement over the pad.
+// Computing the sequence of inputs from that movement is agnostic of the pad on which we move
+// and only depends on the pad we use to control the move which is always a ArrowPad.
+fn all_possible_paths() -> HashMap<IVec2, Vec<String>> {
+    let mut pos = HashMap::new();
+    for x in -2..=2 {
+        for y in -3..=3 {
+            let vert = match y {
+                0 => None,
+                1.. => Some("^".repeat(y as usize)),
+                ..0 => Some("v".repeat(abs(y) as usize)),
+            };
 
-static JUSTA: &str = "A";
-
-static UP: &str = "^A";
-static UPUP: &str = "^^A";
-static UPUPUP: &str = "^^^A";
-static DOWN: &str = "vA";
-static DOWNDOWN: &str = "vvA";
-static DOWNDOWNDOWN: &str = "vvvA";
-static LEFT: &str = "<A";
-static LEFTLEFT: &str = "<<A";
-static RIGHT: &str = ">A";
-static RIGHTRIGHT: &str = ">>A";
-
-static UPLEFT: &str = "^<A";
-static UPLEFTLEFT: &str = "^<<A";
-static UPUPLEFT: &str = "^^<A";
-static UPUPLEFTLEFT: &str = "^^<<A";
-static UPUPUPLEFT: &str = "^^^<A";
-static UPUPUPLEFTLEFT: &str = "^^^<<A";
-
-static RIGHTUP: &str = ">^A";
-static RIGHTUPUP: &str = ">^^A";
-static RIGHTUPUPUP: &str = ">^^^A";
-static RIGHTRIGHTUP: &str = ">>^A";
-static RIGHTRIGHTUPUP: &str = ">>^^A";
-
-static RIGHTDOWN: &str = ">vA";
-static RIGHTDOWNDOWN: &str = ">vvA";
-static RIGHTDOWNDOWNDOWN: &str = ">vvvA";
-static RIGHTRIGHTDOWN: &str = ">>vA";
-static RIGHTRIGHTDOWNDOWN: &str = ">>vvA";
-static RIGHTRIGHTDOWNDOWNDOWN: &str = ">>vvvA";
-
-static LEFTDOWN: &str = "v<A";
-static LEFTDOWNDOWN: &str = "vv<A";
-static LEFTDOWNDOWNDOWN: &str = "vvv<A";
-static LEFTLEFTDOWN: &str = "v<<A";
-static LEFTLEFTDOWNDOWN: &str = "vv<<A";
-
-//     +---+---+
-//     | ^ | A |
-// +---+---+---+
-// | < | v | > |
-// +---+---+---+
-
-fn parse_input(input: &str) -> Vec<Vec<char>> {
-    input.lines().map(|line| line.chars().collect()).collect()
-}
-
-pub fn part_two(input: &str) -> Option<usize> {
-    None
+            let horizontal = match x {
+                0 => None,
+                1.. => Some("<".repeat(x as usize)),
+                ..0 => Some(">".repeat(abs(x) as usize)),
+            };
+            let combo = match (horizontal, vert) {
+                (None, None) => vec!["A".to_string()],
+                (None, Some(vert)) => vec![vert + "A"],
+                (Some(horizontal), None) => vec![horizontal + "A"],
+                (Some(horizontal), Some(vert)) => {
+                    vec![horizontal.clone() + &vert + "A", vert + &horizontal + "A"]
+                }
+            };
+            pos.insert(IVec2::new(x, y), combo);
+        }
+    }
+    pos
 }
 
 #[cfg(test)]
@@ -221,10 +226,15 @@ mod tests {
         //
         //
         //
-        //
-        // to go 3 -> 7 input: <vA<AA>>^AAvA<^A>AAvA^A
-        //  is better than
-        // to go 3 -> 7 input: v<<A>>^AAv<A<A>>^AAvAA^<A>A
+        // Good (1) vs bad (2)
+        // (1) to go 3 -> 7 input:  <vA<AA>>^AAvA<^A>AAvA^A
+        //                          v<<AA>^AA>A
+        //                          <<^^A
+        // (2) to go 3 -> 7 input:  v<<A>>^AAv<A<A>>^AAvAA^<A>A
+        //                          <AAv<AA>>^A
+        //                          ^^<<A
+        // The shortest sequence at level N is not obvious from each sub-level's shortests paths
+        // We need to check all possible path at each level, recurse and take min.
 
         let result = part_one(&advent_of_code::template::read_file("examples", DAY));
         assert_eq!(result, Some(126384));
