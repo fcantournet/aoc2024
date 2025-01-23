@@ -21,7 +21,7 @@ pub fn part_one(input: &str) -> Option<usize> {
 pub fn part_two(input: &str) -> Option<usize> {
     let secrets = parse_input(input);
 
-    let mut seq = HashMap::with_capacity(2000);
+    let mut seq = HashMap::with_capacity(50000);
     for s in secrets.into_iter() {
         let next = sequence(s);
         for e in next.into_iter() {
@@ -51,7 +51,7 @@ fn mix_and_prune(input: usize, current: usize) -> usize {
 }
 
 fn sequence(start: usize) -> HashMap<(i64, i64, i64, i64), i64> {
-    let mut seq = HashMap::new();
+    let mut seq = HashMap::with_capacity(2000);
 
     let last0 = (start % 10) as i64;
     let mut next = next_secret(start);
