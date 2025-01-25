@@ -10,7 +10,7 @@ pub fn part_one(input: &str) -> Option<usize> {
         .map(|secret| {
             let mut next = secret;
             for _ in 0..2000 {
-                next = next_secret(next);
+                next = next_secret_faster(next);
             }
             next
         })
@@ -39,6 +39,14 @@ fn parse_input(input: &str) -> Vec<usize> {
     input.lines().map(|line| line.parse().unwrap()).collect()
 }
 
+/// Compute next secret number using a
+/// [Xorshift LFSR](https://en.wikipedia.org/wiki/Linear-feedback_shift_register#Xorshift_LFSRs).
+fn next_secret_faster(mut n: usize) -> usize {
+    n = (n ^ (n << 6)) & 0xffffff;
+    n = (n ^ (n >> 5)) & 0xffffff;
+    (n ^ (n << 11)) & 0xffffff
+}
+
 fn next_secret(current: usize) -> usize {
     let a = mix_and_prune(current * 64, current);
     let b = mix_and_prune(a / 32, a);
@@ -54,19 +62,19 @@ fn sequence(start: usize) -> HashMap<(i64, i64, i64, i64), i64> {
     let mut seq = HashMap::with_capacity(2000);
 
     let last0 = (start % 10) as i64;
-    let mut next = next_secret(start);
+    let mut next = next_secret_faster(start);
     let last1 = (next % 10) as i64;
     let mut a1 = (last1 - last0);
 
-    next = next_secret(next);
+    next = next_secret_faster(next);
     let last2 = (next % 10) as i64;
     let mut a2 = (last2 - last1);
 
-    next = next_secret(next);
+    next = next_secret_faster(next);
     let mut last3 = (next % 10) as i64;
     let mut a3 = (last3 - last2);
 
-    next = next_secret(next);
+    next = next_secret_faster(next);
     let mut last4 = (next % 10) as i64;
     let mut a4 = (last4 - last3);
 
@@ -79,7 +87,7 @@ fn sequence(start: usize) -> HashMap<(i64, i64, i64, i64), i64> {
         a2 = a3;
         a3 = a4;
         last3 = last4;
-        next = next_secret(next);
+        next = next_secret_faster(next);
         last4 = (next % 10) as i64;
         a4 = (last4 - last3);
         if !seq.contains_key(&(a1, a2, a3, a4)) {
