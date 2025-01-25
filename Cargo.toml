@@ -37,6 +37,7 @@ nom = "7.1.3"
 num = "0.4.3"
 pathfinding = "4.13.1"
 cached = "0.54.0"
+petgraph = "0.7.1"
 
 [lints.rust]
 unused = "allow"
