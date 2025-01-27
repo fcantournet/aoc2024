@@ -44,7 +44,7 @@ fn dbg_equations(p: &Problem, ops: Vec<&Ops>) {
     for (i, operand) in p.operands.iter().skip(1).enumerate() {
         print!(" {} {}", ops[i], operand);
     }
-    print!("\n")
+    println!()
 }
 
 fn solve_fn(input: &str, ops: &[fn(usize, usize) -> usize]) -> Option<usize> {
@@ -118,7 +118,6 @@ fn parse_input(input: &str) -> Vec<Problem> {
             Problem {
                 target: result.parse().unwrap(),
                 operands: operands
-                    .trim()
                     .split_whitespace()
                     .map(|x| x.parse().unwrap())
                     .collect(),

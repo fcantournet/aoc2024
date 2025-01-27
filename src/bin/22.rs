@@ -50,8 +50,8 @@ fn next_secret_faster(mut n: usize) -> usize {
 fn next_secret(current: usize) -> usize {
     let a = mix_and_prune(current * 64, current);
     let b = mix_and_prune(a / 32, a);
-    let c = mix_and_prune(b * 2048, b);
-    c
+    
+    mix_and_prune(b * 2048, b)
 }
 
 fn mix_and_prune(input: usize, current: usize) -> usize {
@@ -90,9 +90,7 @@ fn sequence(start: usize) -> HashMap<(i64, i64, i64, i64), i64> {
         next = next_secret_faster(next);
         last4 = (next % 10) as i64;
         a4 = (last4 - last3);
-        if !seq.contains_key(&(a1, a2, a3, a4)) {
-            seq.insert((a1, a2, a3, a4), last4);
-        }
+        seq.entry((a1, a2, a3, a4)).or_insert(last4);
     }
     seq
 }

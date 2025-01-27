@@ -37,7 +37,7 @@ fn solve(input: &str, robot_count: usize) -> Option<usize> {
         }
         let value = code
             .chars()
-            .filter(|c| c.is_digit(10))
+            .filter(|c| c.is_ascii_digit())
             .join("")
             .parse::<usize>()
             .unwrap();
@@ -139,17 +139,13 @@ impl NumPad {
             || (to_vec.y == VERBOTTEN.y && from_vec.x == VERBOTTEN.x)
         {
             // We risk going through verbotten case
-            paths = paths
-                .into_iter()
-                .filter(|p| NumPad::valid_path(&from_vec, &p))
-                .collect();
+            paths.retain(|p| NumPad::valid_path(from_vec, p));
         }
 
-        return paths;
+        paths
     }
 
-    fn valid_path(start: &IVec2, path: &str) -> bool {
-        let mut pos = start.clone();
+    fn valid_path(mut pos: IVec2, path: &str) -> bool {
         for c in path.chars() {
             match c {
                 '>' => pos.x -= 1,

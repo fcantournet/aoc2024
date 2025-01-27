@@ -14,7 +14,7 @@ fn debug(input: &str, antinodes: &HashSet<IVec2>) {
                 print!("{c}")
             }
         }
-        print!("\n");
+        println!();
     }
 }
 
@@ -44,8 +44,8 @@ fn gen_antinodes(
 ) -> Vec<IVec2> {
     let mut res = Vec::new();
     if !short_circuit {
-        res.push(a.clone());
-        res.push(b.clone());
+        res.push(*a);
+        res.push(*b);
     }
     let dir = b - a;
 
@@ -105,7 +105,7 @@ fn parse_input(input: &str) -> (HashMap<char, Vec<IVec2>>, (i32, i32)) {
         }
         y_size += 1;
     }
-    (m, (x_size as i32, y_size as i32))
+    (m, (x_size as i32, y_size))
 }
 
 #[cfg(test)]

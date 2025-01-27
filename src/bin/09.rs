@@ -85,7 +85,7 @@ fn dbg_blocks(blocks: &[Option<usize>]) {
             None => print!("."),
         }
     }
-    print!("\n");
+    println!();
 }
 
 fn checksum(blocks: Vec<Option<usize>>) -> Option<usize> {
