@@ -42,7 +42,7 @@ fn solve(input: &str, robot_count: usize) -> Option<usize> {
             .parse::<usize>()
             .unwrap();
         let res = input_lenght * value;
-        println!("{} * {} = {}", input_lenght, value, res);
+        // println!("{} * {} = {}", input_lenght, value, res);
         total += res;
     }
     Some(total)
@@ -74,7 +74,7 @@ fn complexity(from: char, to: char, robot_count: usize, pad: &NumPad) -> usize {
             .min()
             .expect("couldn't calculate min")
     };
-    println!("{} -> {} @{}: {}", from, to, robot_count, min_inputs);
+    // println!("{} -> {} @{}: {}", from, to, robot_count, min_inputs);
     min_inputs
 }
 

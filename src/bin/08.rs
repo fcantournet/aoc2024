@@ -20,7 +20,7 @@ fn debug(input: &str, antinodes: &HashSet<IVec2>) {
 
 fn solve(input: &str, short_circuit: bool) -> Option<usize> {
     let (m, (x_size, y_size)) = parse_input(input);
-    println!("Grid of size {} * {}", x_size, y_size);
+    // println!("Grid of size {} * {}", x_size, y_size);
 
     let mut antinodes: HashSet<IVec2> = HashSet::new();
 
@@ -31,7 +31,7 @@ fn solve(input: &str, short_circuit: bool) -> Option<usize> {
             antinodes.extend(an.iter());
         }
     }
-    debug(input, &antinodes);
+    // debug(input, &antinodes);
     Some(antinodes.len())
 }
 
